@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "Employee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Employee</h2>
+
+<div class="container">
+    <div class="row">
+
+        @(Html.Kendo().Grid<Prabesh.Models.Employee>()
+    .Name("EmpGrid")
+    .DataSource(dataSource => dataSource
+        .Ajax()
+
+        .Read(read => read.Action("EmployeeList", "EmployeeList"))
+        )
+        )
+    </div>
+</div>  

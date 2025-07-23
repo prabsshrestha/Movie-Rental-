@@ -1,0 +1,45 @@
+﻿@model Prabesh.ViewModel.CustomerFormViewModel
+@{
+    ViewBag.Title = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+
+@using (Html.BeginForm("Save", "Customer"))
+{
+
+    @Html.ValidationSummary(true, "Please fix the following errors");
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Name)
+        @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.MembershipTypeId)
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId, new SelectList(Model.MembershipTypes, "Id", "Name"), "Select Membership Type", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.MembershipTypeId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Birthdate)
+        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:yyyy-MM-dd}", new { @class = "form-control", Type = "date" })
+        @Html.ValidationMessageFor(m => m.Customer.Birthdate)
+    </div>
+
+
+
+    <div class="checkbox">
+        <label>@Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewletter) Subscribed to Newsletter?</label>
+    </div>
+
+    @Html.HiddenFor(m => m.Customer.Id)
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Save</button>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

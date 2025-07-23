@@ -1,0 +1,211 @@
+﻿@import "style.css";
+
+.k-height-small {
+    height: 25px;
+}
+
+.k-height-medium {
+    height: 30px;
+}
+
+.k-height-large {
+    height: 35px;
+}
+
+.k-height-x-large {
+    height: 40px;
+}
+
+.k-input-value-text {
+    color: var(--grey);
+}
+
+/*****Kendo search control*****/
+.k-search-wrapper {
+    position: relative;
+}
+
+.k-search-icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    left: 12px;
+    height: 25px;
+    font-size: 20px;
+}
+
+.k-search.k-input-inner {
+    padding-left: 40px !important;
+}
+/*****Kendo search control end*****/
+
+/*****Kendo filter control*****/
+.k-filter-wrapper {
+    position: relative;
+}
+
+.k-filter-icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    left: 12px;
+    height: 25px;
+    font-size: 20px;
+}
+
+.k-dropdown-tree-filter .k-input-values {
+    padding-left: 32px !important;
+}
+/*****Kendo filter control end*****/
+
+/*****Kendo dropdown control*****/
+.k-dropdown-tree-wrapper {
+    position: relative;
+}
+
+.k-dropdown-icon {
+    position: absolute;
+    top: -8px;
+    bottom: 0;
+    margin: auto 0;
+    right: 10px;
+    font-size: 16px;
+    color: var(--grey);
+    height: 17px;
+    width: 17px;
+}
+
+.k-dropdown-tree-wrapper .k-clear-value {
+    margin-right: 23px;
+}
+/*****Kendo filter control end*****/
+
+
+/*-----kendo panel----------*/
+.k-panelbar, .k-panelbar-header, k-link, .k-panelbar > .k-panelbar-header {
+    border: unset;
+}
+
+    .k-panelbar .k-panelbar-item {
+        margin-top: 10px;
+    }
+
+.k-panelbar-item .k-level-1 {
+    margin-top: 0px;
+}
+
+.k-panelbar > .k-panelbar-header > .k-link {
+    padding: 10px 20px !important;
+}
+
+.k-link {
+    color: var(--textGrey);
+    font-size: var(--medium);
+    font-weight: 500;
+}
+
+.k-panelbar > .k-panelbar-header > .k-link, .k-panelbar > .k-panelbar-header > .k-link {
+    color: var(--textGrey);
+    font-size: var(--medium);
+    font-weight: 500;
+}
+
+.k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link {
+    font-weight: 400;
+    font-size: var(--small);
+    color: var(--textGrey);
+}
+
+    .k-panelbar > .k-panelbar-header > .k-link.k-selected,
+    .k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link.k-selected {
+        background-color: var(--white);
+        color: var(--red);
+    }
+
+        .k-panelbar > .k-panelbar-header > .k-link.k-selected svg path,
+        .k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link.k-selected svg path {
+            stroke: var(--red);
+        }
+
+        .k-panelbar > .k-panelbar-header > .k-link.k-selected.k-hover,
+        .k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link.k-selected:hover,
+        .k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link.k-selected.k-hover {
+            background-color: #ebebeb;
+        }
+
+.k-panelbar .k-panelbar-group > .k-panelbar-item {
+    padding-left: 50px;
+}
+
+    .k-panelbar > .k-panelbar-header > .k-link:focus, .k-panelbar > .k-panelbar-header > .k-link.k-focus, .k-panelbar .k-panelbar-group > .k-panelbar-item > .k-link.k-focus {
+        box-shadow: unset;
+    }
+
+/* -----------------Splitter--------------------*/
+.k-splitter {
+    color: var(--textGrey);
+}
+
+.k-splitbar .k-collapse-prev,
+.k-splitbar .k-expand-prev {
+    position: absolute;
+    top: 9px;
+    background: var(--red);
+    color: white;
+    padding: 0px;
+    border-radius: 2px;
+    height: 23px;
+}
+
+.k-splitbar {
+    background-color: var(--white);
+}
+
+    .k-splitbar:focus, .k-splitbar.k-focus {
+        background: var(--kendo-color-base-hover, #ebebeb);
+        color: var(--grey);
+    }
+
+/*-----------Avatar------------*/
+.k-avatar-lg .k-avatar-text {
+    font-size: var(--extraLarge);
+}
+
+.k-avatar-md {
+    width: 22px;
+    height: 22px;
+    flex-basis: unset;
+}
+
+    .k-avatar-md .k-avatar-text {
+        font-size: 10px;
+    }
+
+/*-----avatar and dropdown-------*/
+
+.k-popup {
+    background-color: white;
+    border: var(--greyBorder);
+    z-index: 1000;
+    box-shadow: unset;
+}
+
+/*----------------------kendo dialog (pop up) start----------------------*/
+
+.k-window-lg {
+    width: 80vw;
+}
+
+.k-window-md {
+    width: 60vw;
+}
+
+.k-window-sm {
+    min-width: 40vw;
+    max-width: 90vw;
+}
+
+/*----------------------kendo dialog (pop up) end----------------------*/
+

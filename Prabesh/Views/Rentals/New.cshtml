@@ -1,0 +1,339 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Rental Form";
+}
+
+<style>
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        width: 280px;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row">
+
+        @*1st column*@
+        <div class="col-md-6">
+            <h2>Rental Form </h2>
+            @*this helper method <!--@Ajax.BeginForm()--> is designed to call actions in MVC controller not API controllers*@
+            <form id="newRental">
+                <div class="form-group">
+                    <label>Customer</label>
+                    <div class="tt-container">
+                        <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Movie</label>
+                    <div class="tt-container">
+                        <input id="movie" name="movie" data-rule-AtleastOneMovie="true" type="text" value="" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 col-sm-4">
+                        <ul id="selectedmovies" class="list-group"></ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Discount (%)</label>
+                    <div class="tt-container">
+                        <input id="discountPercentage" name="discountPercentage" type="number" class="form-control" min="0" max="100" />
+                    </div>
+                </div>
+
+                @*div.form-group>label+div.tt-container>input[type="text"]*@
+
+                <div class="form-group">
+                    <label>VAT (%)</label>
+                    <div class="tt-container">
+                        <input id="vat" name="vat" type="number" readonly class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Amount</label>
+                    <div class="tt-container">
+                        <input id="totalAmount" name="totalAmount" type="number" readonly class="form-control" />
+                    </div>
+                </div>
+
+                <button class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        @*2nd Column*@
+        <div class="col-md-6">
+            <div id="rentalSummary">
+                @*rentalsummary will be displayed here*@
+            </div>
+
+            <button id="printbutton" name="printbutton" class="btn btn-primary" style="display:none;">Print Receipt</button>
+
+            <button id="download" name="download" class="btn btn-primary" style="display:none;">Download Receipt</button>
+
+            @*hidden container for printing*@
+            <div id="printcontainer" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+
+
+            var vm = {
+                movieIds: [],
+                customerId: null,
+                discountPercentage: 0,
+                totalAmount: 0,
+                vat: 3
+            };
+
+            //initailize the default value of vat in input field
+            $("#vat").val(vm.vat);
+
+            var customers = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/customers?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#customer').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                name: 'customers',
+                display: 'name',
+                source: customers
+            }).on("typeahead:select", function (e, customer) {
+                vm.customerId = customer.id;
+            });
+
+            var movies = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/movies?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#movie').typeahead({
+
+                minLength: 3,
+                highlight: true
+            },
+
+                {
+                    name: 'movies',
+                    display: 'name',
+                    source: movies
+                }).on("typeahead:select", function (e, movie) {
+
+                    $("#selectedmovies").append("<li class='list-group-item'>" +
+                        "<span>" + movie.name + "</span>" +
+                        "<span>$" + movie.price + "</span>" + "</li>");
+
+                    $("#movie").typeahead("val", "");
+                    console.log(movie.id)
+                    vm.movieIds.push(movie.id);
+                    updateTotalAmount();
+                });
+
+            function updateTotalAmount() {
+                console.log("Updating total amount with the following data:");
+                console.log(JSON.stringify(vm));
+
+
+                //call api CalculateTotal to calculate the totalamount
+                $.ajax({
+                    url: "/api/calculateTotal",
+                    method: "post",
+                    data: {
+                        customerId: vm.customerId,
+                        MovieIds: vm.movieIds,
+                        DiscountPercentage: parseFloat(vm.discountPercentage),
+                        VAT: vm.vat
+                    }
+
+                })
+                    .done(function (response) {
+                        vm.totalAmount = response.totalAmount;
+                        $("#totalAmount").val(vm.totalAmount);
+
+                    })
+                    .fail(function () {
+                        toastr.error("Failed to calculate Total Amount.");
+                    });
+            }
+
+            $("#discountPercentage").on('input', function () {
+                vm.discountPercentage = parseFloat($(this).val());
+                updateTotalAmount();
+            });
+
+
+            //to ensure the valid customer from the list we need custom valdiator
+            $.validator.addMethod("validCustomer", function () {
+                //make sure the view model has a property called Customer Id and that customer ID has numeric value i.e not zero
+                return vm.customerId && vm.customerId !== 0;
+            }, "Please select a valid customer.");
+
+
+            //to ensure the customer must select one movie
+            $.validator.addMethod("AtleastOneMovie", function () {
+                return vm.movieIds.length > 0;
+            }, "Please select atleast one movie.");
+
+            var validator = $("#newRental").validate({
+                submitHandler: function () {
+                    //if the form is valid this function will be called to submit the form to the server\
+
+                    $.ajax({
+                        url: "/api/newRentals",
+                        method: "post",
+                        data: vm
+                    })
+                        .done(function () {
+                            toastr.success("Rentals successfully recorded.");
+
+                            $("#rentalSummary").html(
+                                "<h3>Receipt</h3>" +
+                                "<p> Customer Name : " + $("#customer").val() + "</p>" +
+                                "<p> Movies : </p>" +
+                                "<ul>" + $("#selectedmovies").html() + "</ul>" +
+                                "<p> Discount Percentage : " + vm.discountPercentage + " % </p>" +
+                                "<p> VAT: " + vm.vat + " % </p>" +
+                                "<p>Total Amount : $" + vm.totalAmount + "</p>"
+                            );
+
+                            $("#printbutton").show();
+                            $("#download").show();
+
+                            $("#customer").typeahead("val", "");
+                            $("#movie").typeahead("val", "");
+                            $("#selectedMovies").empty();
+                            $("#discountPercentage").val("");
+                            $("totalAmount").val("");
+                            $("#selectedmovies").empty(); //to empty the list of movies
+
+                            //to reset the view model
+                            vm = {
+                                movieIds: [], customerId: null,
+                                discountPercentage: 0,
+                                totalAmount: 0
+                            };
+
+                            validator.resetForm(); // reset the form in terms of validation
+
+                        })
+                        .fail(function () {
+                            toastr.fail("Something unexpected happened.");
+                        });
+                    return false;
+                }
+            });
+
+            //print functionality
+            $("#printbutton").click(function () {
+
+                var printcontents = $("#rentalSummary").html();
+                var printwindow = window.open('', '', 'height:300,width:400');
+                printwindow.document.write('<html><head><title>Receipt</title></head><body>');
+
+                printwindow.document.write('<style>');
+                printwindow.document.write('body { font-family: Arial, sans-serif; padding: 20px; } h3 { color: #333; } p { margin: 0 0 10px; } ul { list-style-type: none; padding: 0; } .list-group-item { display: flex; justify-content: space-between; border: 1px solid #ccc; padding: 5px; margin-bottom: 5px; } </style>');
+                printwindow.document.write(printcontents);
+                printwindow.document.write('</head></body>');
+                printwindow.document.close();
+                printwindow.print();
+            });
+
+            //download functionality
+            $("#download").click(async function () {
+                var { jsPDF } = window.jspdf;
+                var doc = new jsPDF();
+                await html2canvas(document.querySelector("#rentalSummary"), {
+                    scale: 6
+                }).then(canvas => {
+                    doc.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 180, 160);
+
+                    doc.save("receipt.pdf");
+                });
+            
+            });
+
+
+            //using jspdf and html2canvas
+            @*$("#download").click(function () {
+
+                html2canvas(document.querySelector("#rentalSummary")).then(canvas => {
+
+                    //capture the content of rentalSummary 
+                    var imgData = canvas.toDataURL('image/png');
+
+                    //create a new jspdf document
+                    var pdf = new jsPDF('p', 'mm', 'a4');
+
+                    //calculate the width and height of the pdf 
+                    var imgWidth = pdf.internal.pageSize.getWidth();
+                    var imgHeight = canvas.height * imgWidth / canvas.width;
+
+                    //add the image to the pdf 
+                    pdf.addImage(imgData, 'PDF', 0, 0, imgWidth, imgHeight);
+
+                    pdf.save('receipt.pdf');
+                }).catch(function (error) {
+
+                    console.error("Error generating PDF: ", error);
+                    toastr.error("Failed to generate PDF");
+                });
+
+            });*@
+
+           @* //using blob 
+            $("#download").click(function () {
+                // Generate the HTML content for the receipt
+
+                var receiptContent = $("#rentalSummary").html();
+
+                // Create a Blob from the HTML content
+                var blob = new Blob([receiptContent], { type: "text/html" });
+
+                // Create a temporary URL for the Blob (Binary Large Object)
+                var url = URL.createObjectURL(blob);
+
+                // Create a link element, set its attributes, and trigger the click event
+                var a = document.createElement("a");
+                a.style.display = "none";
+                a.href = url;
+                a.download = "receipt.html";
+                document.body.appendChild(a);
+                a.click();
+
+                // Clean up by removing the link element and revoking the URL object
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });*@
+    
+        });
+    </script>
+
+}
+

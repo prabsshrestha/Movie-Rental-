@@ -1,0 +1,43 @@
+﻿@model List<Prabesh.Models.Movie>
+
+<h1>Movie</h1>
+
+<table id="movies" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movies</th>
+            <th>Genre</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var table = $("#movies").DataTable({
+                ajax:
+                {
+                    url: "/api/movies",
+                    dataSrc: ""
+                },
+                //columns
+                columns: [
+                    {
+                        //1st column
+                        data: "name"
+                    },
+                    {
+                        //2nd column
+                        data: "genre.name"
+                    }
+                ]
+            });
+        });
+    </script>
+}
+
+
