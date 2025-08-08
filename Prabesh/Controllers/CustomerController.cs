@@ -64,9 +64,10 @@ namespace Prabesh.Controllers
             return RedirectToAction("Index", "Customer");
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
+
         public ActionResult Index()
         {
-
             return View();
         }
 

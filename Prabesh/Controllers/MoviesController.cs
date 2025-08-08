@@ -77,13 +77,6 @@ namespace Prabesh.Controllers
                 {
                     Genres = _context.Genres.ToList()
                 };
-                /*
-                                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                                foreach (var error in errors)
-                                {
-                                    System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
-                                }*/
-
                 return View("MovieForm", viewModel);
             }
 

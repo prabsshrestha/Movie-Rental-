@@ -1,4 +1,6 @@
-﻿<div class="navbar navbar-inverse navbar-fixed-top">
+﻿@using Prabesh
+
+<div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -14,9 +16,14 @@
                 <li>@Html.ActionLink("Home", "Index", "Home")</li>
                 <li>@Html.ActionLink("About", "About", "Home")</li>
                 <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                <li>@Html.ActionLink("Customer", "Index", "Customer")</li>
                 <li>@Html.ActionLink("Movies", "Index", "Movies")</li>
-                <li>@Html.ActionLink("New Rental", "New", "Rentals")</li>
+
+                @if (User.IsInRole("CanManageMovies"))
+                {
+                    <li>@Html.ActionLink("Customer", "Index", "Customer")</li>
+                    <li>@Html.ActionLink("New Rental", "New", "Rentals")</li>
+                }
+
             </ul>
             @Html.Partial("_LoginPartial")
         </div>

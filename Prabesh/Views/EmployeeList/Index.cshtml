@@ -10,8 +10,8 @@
     <div class="row">
 
         @(Html.Kendo().Grid<Prabesh.Models.Employee>()
-    .Name("EmpGrid")
-    .DataSource(dataSource => dataSource
+        .Name("EmpGrid")
+        .DataSource(dataSource => dataSource
         .Ajax()
 
         .Read(read => read.Action("EmployeeList", "EmployeeList"))

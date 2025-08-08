@@ -2889,7 +2889,7 @@
     <Content Include="Scripts\Kendo\js\messages\kendo.messages.zh-HK.min.js.map" />
     <Content Include="Scripts\Kendo\js\messages\kendo.messages.zh-TW.min.js.map" />
     <Content Include="Scripts\Kendo\styles\font-icons\kendo-font-icons.ttf" />
-    <Content Include="Views\EmployeeList\Employee.cshtml" />
+    <Content Include="Views\EmployeeList\Index.cshtml" />
     <None Include="Web.Testing.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
