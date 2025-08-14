@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using AutoMapper;
 using Prabesh.Dtos;
 using Prabesh.Models;
 
@@ -18,6 +19,27 @@ namespace Prabesh.Controllers.Api
         public NewRentalsController()
         {
             _context = new ApplicationDbContext();
+        }
+
+        //to get the list of rentals 
+        //Get /api/rentals
+
+        public IEnumerable<RentalDto> GetRentals()
+        {
+            var rentalsQuery = _context.Rentals
+               .Include(c => c.Customer)
+               .Include(m => m.Movie);
+
+            return rentalsQuery
+                .ToList()
+                .Select(c => new RentalDto()
+                {
+                    Id = c.Id,
+                    CustomerId = c.Customer.Id,
+                    CustomerName = c.Customer.Name,
+                    MovieId = c.Movie.Id,
+                    MovieName = c.Movie.Name
+                });
         }
 
         [HttpPost]
