@@ -278,59 +278,6 @@
                 });
             
             });
-
-
-            //using jspdf and html2canvas
-            @*$("#download").click(function () {
-
-                html2canvas(document.querySelector("#rentalSummary")).then(canvas => {
-
-                    //capture the content of rentalSummary 
-                    var imgData = canvas.toDataURL('image/png');
-
-                    //create a new jspdf document
-                    var pdf = new jsPDF('p', 'mm', 'a4');
-
-                    //calculate the width and height of the pdf 
-                    var imgWidth = pdf.internal.pageSize.getWidth();
-                    var imgHeight = canvas.height * imgWidth / canvas.width;
-
-                    //add the image to the pdf 
-                    pdf.addImage(imgData, 'PDF', 0, 0, imgWidth, imgHeight);
-
-                    pdf.save('receipt.pdf');
-                }).catch(function (error) {
-
-                    console.error("Error generating PDF: ", error);
-                    toastr.error("Failed to generate PDF");
-                });
-
-            });*@
-
-           @* //using blob 
-            $("#download").click(function () {
-                // Generate the HTML content for the receipt
-
-                var receiptContent = $("#rentalSummary").html();
-
-                // Create a Blob from the HTML content
-                var blob = new Blob([receiptContent], { type: "text/html" });
-
-                // Create a temporary URL for the Blob (Binary Large Object)
-                var url = URL.createObjectURL(blob);
-
-                // Create a link element, set its attributes, and trigger the click event
-                var a = document.createElement("a");
-                a.style.display = "none";
-                a.href = url;
-                a.download = "receipt.html";
-                document.body.appendChild(a);
-                a.click();
-
-                // Clean up by removing the link element and revoking the URL object
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });*@
     
         });
     </script>

@@ -21,9 +21,12 @@
                 @if (User.IsInRole("CanManageMovies"))
                 {
                     <li>@Html.ActionLink("Customer", "Index", "Customer")</li>
-                    <li>@Html.ActionLink("New Rental", "New", "Rentals")</li>
                 }
 
+                @if (!User.IsInRole("CanManageMovies"))
+                {
+                    <li>@Html.ActionLink("Rent Movie", "New", "Rentals")</li>
+                }
             </ul>
             @Html.Partial("_LoginPartial")
         </div>

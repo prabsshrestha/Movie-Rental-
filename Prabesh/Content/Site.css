@@ -52,3 +52,25 @@ input.error{
     font-weight: 500;
     margin-bottom: 0.75rem;
 }
+/** Unauthorized page */
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 80vh;
+}
+
+.centered-content h1 {
+    font-size: 6em;
+    margin-bottom: 0.2em;
+}
+
+.centered-content h2 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+}
+
+.centered-content p {
+    font-size: 1em;
+    max-width: 600px;
+}

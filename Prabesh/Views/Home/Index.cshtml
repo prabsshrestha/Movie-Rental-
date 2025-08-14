@@ -8,7 +8,15 @@
 
 <div class="jumbotron text-center">
     <h1 class="display-4">Welcome, @username!</h1>
-    <p class="lead">This is your Movie Rental Admin Dashboard.</p>
+    @if (User.IsInRole("CanManageMovies"))
+    {
+        <p class="lead">This is your Movie Rental Admin Dashboard.</p>
+
+    }
+    else
+    {
+        <p class="lead">Please, login to get access to the application.</p>
+    }
     <a class="btn btn-primary btn-lg" href="@Url.Action("New", "Rentals")">Add New Rental</a>
 </div>
 
