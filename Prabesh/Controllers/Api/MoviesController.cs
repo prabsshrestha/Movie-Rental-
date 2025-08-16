@@ -105,7 +105,7 @@ namespace Prabesh.Controllers.Api
 
         [HttpDelete]
         [Authorize(Roles = RoleName.CanManageMovies)]
-        public IHttpActionResult DeleteCustomer(int id)
+        public IHttpActionResult DeleteMovie(int id)
         {
 
             var MovieInDb = _context.Movies.SingleOrDefault(m => m.Id == id); // this lamda expression returns the movie if it exist in the database

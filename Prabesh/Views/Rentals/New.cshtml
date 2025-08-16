@@ -10,6 +10,12 @@
         justify-content: space-between;
         width: 280px;
     }
+
+    .remove-movie {
+        height: 21px;
+        padding: 1px;
+        width: 55px;
+    }
 </style>
 
 
@@ -30,9 +36,9 @@
 
                 <div class="form-group">
                     <label>Movie</label>
-                    <div class="tt-container">
-                        <input id="movie" name="movie" data-rule-AtleastOneMovie="true" type="text" value="" class="form-control" />
-                    </div>
+                    <select id="movieDropdown" name="movieDropdown" data-rule-AtleastOneMovie="true" class="form-control">
+                        <option value="">--- Select Movie ---</option>
+                    </select>
                 </div>
 
                 <div class="row">
@@ -47,8 +53,6 @@
                         <input id="discountPercentage" name="discountPercentage" type="number" class="form-control" min="0" max="100" />
                     </div>
                 </div>
-
-                @*div.form-group>label+div.tt-container>input[type="text"]*@
 
                 <div class="form-group">
                     <label>VAT (%)</label>
@@ -71,7 +75,7 @@
         @*2nd Column*@
         <div class="col-md-6">
             <div id="rentalSummary">
-                @*rentalsummary will be displayed here*@
+                @*rentalsummary*@
             </div>
 
             <button id="printbutton" name="printbutton" class="btn btn-primary" style="display:none;">Print Receipt</button>
@@ -84,8 +88,6 @@
     </div>
 </div>
 
-
-
 @section Scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
@@ -93,6 +95,60 @@
     <script>
         $(document).ready(function () {
 
+            let selectedmovie = [];
+
+            //movie dropdown
+            $.get("/api/movies", function (movies) {
+                movies.forEach(function (movie) {
+                    $("#movieDropdown").append(
+                        `<option value="${movie.id}" data-price="${movie.price}">${movie.name}</option>`
+                    );
+                });
+            });
+
+            $("#movieDropdown").change(function () {
+                var id = $(this).val();
+                var name = $("#movieDropdown option:selected").text();
+                var price = $("#movieDropdown option:selected").data("price");
+
+                addMovie(id, name, price);
+                $(this).val("");
+                vm.movieIds = selectedmovie.map(m => ({ id: m.id, qty: m.qty }));
+
+                updateTotalAmount();
+            });
+
+            function addMovie(movieId, movieName, price) {
+                let movie = selectedmovie.find(m => m.id === movieId);
+
+                if (movie) {
+                    movie.quantity++;
+                } else {
+                    selectedmovie.push({ id: movieId, name: movieName, price: price, quantity: 1 });
+                }
+
+                renderMovies();
+            }
+
+            function renderMovies() {
+                let container = document.getElementById("selectedmovies");
+                container.innerHTML = "";
+
+                let total = 0;
+
+                selectedmovie.forEach(m => {
+                    let lineTotal = m.price * m.quantity;
+                    total += lineTotal;
+
+                    container.innerHTML += `<div class='list-group-item'> 
+                    <span> ${m.name} × ${m.quantity} </span>
+                    <span> $${lineTotal} </span>
+                      <button class="btn btn-danger btn-sm remove-movie" data-id="${m.id}">Remove</button>
+                    </div>`;
+                });
+
+                document.getElementById("totalAmount").value = "Total: $" + total;
+            }
 
             var vm = {
                 movieIds: [],
@@ -102,7 +158,15 @@
                 vat: 3
             };
 
-            //initailize the default value of vat in input field
+            $("#selectedmovies").off("click", ".remove-movie").on("click", ".remove-movie", function () {
+                const id = String($(this).data("id"));
+                selectedmovie = selectedmovie.filter(m => String(m.id) !== id);
+                vm.movieIds = selectedmovie.map(m => ({ id: m.id, qty: m.quantity }));
+
+                renderMovies();
+                updateTotalAmount();
+            });
+
             $("#vat").val(vm.vat);
 
             var customers = new Bloodhound({
@@ -125,63 +189,21 @@
                 vm.customerId = customer.id;
             });
 
-            var movies = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                remote: {
-                    url: '/api/movies?query=%QUERY',
-                    wildcard: '%QUERY'
-                }
-            });
-
-            $('#movie').typeahead({
-
-                minLength: 3,
-                highlight: true
-            },
-
-                {
-                    name: 'movies',
-                    display: 'name',
-                    source: movies
-                }).on("typeahead:select", function (e, movie) {
-
-                    $("#selectedmovies").append("<li class='list-group-item'>" +
-                        "<span>" + movie.name + "</span>" +
-                        "<span>$" + movie.price + "</span>" + "</li>");
-
-                    $("#movie").typeahead("val", "");
-                    console.log(movie.id)
-                    vm.movieIds.push(movie.id);
-                    updateTotalAmount();
-                });
-
             function updateTotalAmount() {
-                console.log("Updating total amount with the following data:");
-                console.log(JSON.stringify(vm));
+                    console.log("Updating total amount with the following data:");
+                    console.log(JSON.stringify(vm));
+                let subtotal = selectedmovie.reduce((sum, m) => sum + m.price * m.quantity, 0);
 
+                let discount = vm.discountPercentage ? (subtotal * vm.discountPercentage / 100) : 0;
+                let vatAmount = vm.vat ? ((subtotal - discount) * vm.vat / 100) : 0;
 
-                //call api CalculateTotal to calculate the totalamount
-                $.ajax({
-                    url: "/api/calculateTotal",
-                    method: "post",
-                    data: {
-                        customerId: vm.customerId,
-                        MovieIds: vm.movieIds,
-                        DiscountPercentage: parseFloat(vm.discountPercentage),
-                        VAT: vm.vat
-                    }
+                let total = subtotal - discount + vatAmount;
 
-                })
-                    .done(function (response) {
-                        vm.totalAmount = response.totalAmount;
-                        $("#totalAmount").val(vm.totalAmount);
+                vm.totalAmount = total;
 
-                    })
-                    .fail(function () {
-                        toastr.error("Failed to calculate Total Amount.");
-                    });
+                $("#totalAmount").val(total.toFixed(2)); // show 2 decimals
             }
+
 
             $("#discountPercentage").on('input', function () {
                 vm.discountPercentage = parseFloat($(this).val());
@@ -189,21 +211,17 @@
             });
 
 
-            //to ensure the valid customer from the list we need custom valdiator
             $.validator.addMethod("validCustomer", function () {
-                //make sure the view model has a property called Customer Id and that customer ID has numeric value i.e not zero
                 return vm.customerId && vm.customerId !== 0;
             }, "Please select a valid customer.");
 
 
-            //to ensure the customer must select one movie
             $.validator.addMethod("AtleastOneMovie", function () {
                 return vm.movieIds.length > 0;
             }, "Please select atleast one movie.");
 
             var validator = $("#newRental").validate({
                 submitHandler: function () {
-                    //if the form is valid this function will be called to submit the form to the server\
 
                     $.ajax({
                         url: "/api/newRentals",
@@ -231,16 +249,15 @@
                             $("#selectedMovies").empty();
                             $("#discountPercentage").val("");
                             $("totalAmount").val("");
-                            $("#selectedmovies").empty(); //to empty the list of movies
+                            $("#selectedmovies").empty();
 
-                            //to reset the view model
                             vm = {
                                 movieIds: [], customerId: null,
                                 discountPercentage: 0,
                                 totalAmount: 0
                             };
 
-                            validator.resetForm(); // reset the form in terms of validation
+                            validator.resetForm();
 
                         })
                         .fail(function () {
@@ -265,7 +282,6 @@
                 printwindow.print();
             });
 
-            //download functionality
             $("#download").click(async function () {
                 var { jsPDF } = window.jspdf;
                 var doc = new jsPDF();
@@ -276,9 +292,9 @@
 
                     doc.save("receipt.pdf");
                 });
-            
+
             });
-    
+
         });
     </script>
 
