@@ -27,4 +27,11 @@ namespace Prabesh.Dtos
 
         public int Price { get; set; }
     }
+
+    public class TopMovie
+    {
+        public int MovieId { get; set; }
+        public string MovieName { get; set; }
+        public int total { get; set; }
+    }
 }

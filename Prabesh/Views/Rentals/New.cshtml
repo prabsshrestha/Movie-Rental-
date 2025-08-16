@@ -113,7 +113,7 @@
 
                 addMovie(id, name, price);
                 $(this).val("");
-                vm.movieIds = selectedmovie.map(m => ({ id: m.id, qty: m.qty }));
+                vm.movieIds = selectedmovie.map(m => parseInt(m.id));
 
                 updateTotalAmount();
             });
@@ -140,11 +140,11 @@
                     let lineTotal = m.price * m.quantity;
                     total += lineTotal;
 
-                    container.innerHTML += `<div class='list-group-item'> 
-                    <span> ${m.name} × ${m.quantity} </span>
-                    <span> $${lineTotal} </span>
-                      <button class="btn btn-danger btn-sm remove-movie" data-id="${m.id}">Remove</button>
-                    </div>`;
+                    container.innerHTML += `<div class='list-group-item'>
+                        <span> ${m.name} × ${m.quantity} </span>
+                        <span> $${lineTotal} </span>
+                          <button class="btn btn-danger btn-sm remove-movie" data-id="${m.id}">Remove</button>
+                        </div>`;
                 });
 
                 document.getElementById("totalAmount").value = "Total: $" + total;
@@ -190,8 +190,8 @@
             });
 
             function updateTotalAmount() {
-                    console.log("Updating total amount with the following data:");
-                    console.log(JSON.stringify(vm));
+                console.log("Updating total amount with the following data:");
+                console.log(JSON.stringify(vm));
                 let subtotal = selectedmovie.reduce((sum, m) => sum + m.price * m.quantity, 0);
 
                 let discount = vm.discountPercentage ? (subtotal * vm.discountPercentage / 100) : 0;
@@ -231,11 +231,16 @@
                         .done(function () {
                             toastr.success("Rentals successfully recorded.");
 
+                            let receiptMovies = "";
+                            selectedmovie.forEach(m => {
+                                receiptMovies += `<li>${m.name} × ${m.quantity} - $${(m.price * m.quantity).toFixed(2)}</li>`;
+                            });
+
                             $("#rentalSummary").html(
                                 "<h3>Receipt</h3>" +
                                 "<p> Customer Name : " + $("#customer").val() + "</p>" +
                                 "<p> Movies : </p>" +
-                                "<ul>" + $("#selectedmovies").html() + "</ul>" +
+                                "<ul>" + receiptMovies + "</ul>" +
                                 "<p> Discount Percentage : " + vm.discountPercentage + " % </p>" +
                                 "<p> VAT: " + vm.vat + " % </p>" +
                                 "<p>Total Amount : $" + vm.totalAmount + "</p>"
@@ -299,4 +304,3 @@
     </script>
 
 }
-
