@@ -21,10 +21,7 @@
                 @if (User.IsInRole("CanManageMovies"))
                 {
                     <li>@Html.ActionLink("Customer", "Index", "Customer")</li>
-                }
-
-                @if (!User.IsInRole("CanManageMovies"))
-                {
+                    <li>@Html.ActionLink("Rental List", "Index", "Rentals")</li>
                     <li>@Html.ActionLink("Rent Movie", "New", "Rentals")</li>
                 }
             </ul>

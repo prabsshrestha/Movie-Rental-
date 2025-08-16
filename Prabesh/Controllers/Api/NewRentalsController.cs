@@ -23,7 +23,7 @@ namespace Prabesh.Controllers.Api
 
         //to get the list of rentals 
         //Get /api/rentals
-
+        [Route("api/rentals")]
         public IEnumerable<RentalDto> GetRentals()
         {
             var rentalsQuery = _context.Rentals
@@ -38,7 +38,8 @@ namespace Prabesh.Controllers.Api
                     CustomerId = c.Customer.Id,
                     CustomerName = c.Customer.Name,
                     MovieId = c.Movie.Id,
-                    MovieName = c.Movie.Name
+                    MovieName = c.Movie.Name,
+                    DateRented = c.DateRented
                 });
         }
 
@@ -68,6 +69,21 @@ namespace Prabesh.Controllers.Api
                 _context.Rentals.Add(rental);
             }
 
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("api/rentals/{id}")]
+        [Authorize(Roles = RoleName.CanManageMovies)]
+        public IHttpActionResult DeleteRental(int id)
+        {
+            var rentalInDb = _context.Rentals.SingleOrDefault(m => m.Id == id); 
+
+            if (rentalInDb == null)
+                return NotFound();
+            _context.Rentals.Remove(rentalInDb);
             _context.SaveChanges();
 
             return Ok();

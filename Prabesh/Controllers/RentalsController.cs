@@ -17,7 +17,7 @@ namespace Prabesh.Controllers
             return View();
         }
 
-        [AuthorizeExcept(DeniedRoles = RoleName.CanManageMovies)]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             return View();
