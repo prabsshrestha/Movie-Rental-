@@ -10,4 +10,9 @@ namespace Prabesh.Dtos
             public int CustomerId { get; set; }
             public List<int> MovieIds { get; set; }
     }
+    public class TopRentals
+    {
+        public string CustomerName { get; set; }
+        public DateTime DateRented { get; set; }
+    }
 }

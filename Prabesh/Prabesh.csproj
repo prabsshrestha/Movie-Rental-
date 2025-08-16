@@ -237,6 +237,7 @@
     <Compile Include="Dtos\MovieDto.cs" />
     <Compile Include="Dtos\NewRentalDto.cs" />
     <Compile Include="Dtos\RentalDto.cs" />
+    <Compile Include="Dtos\TopCustomerDto.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="GlimpseSecurityPolicy.cs" />
     <Compile Include="Global.asax.cs">

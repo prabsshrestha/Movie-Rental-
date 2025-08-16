@@ -22,7 +22,7 @@
 
 @if (User.IsInRole("CanManageMovies"))
 {
-    <div class="row justify-content-center" style="max-width:900px; margin:auto; gap:5px; display:flex; flex-wrap:wrap;">
+    <div class="row justify-content-center" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top:-15px;">
         <div class="custom-box p-4 text-center">
             <h3>@customersCount</h3>
             <p>Customers</p>
@@ -45,6 +45,69 @@
         </div>
     </div>
 
+    <div class="row justify-content-center mt-2" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top: 12px;">
+        <div class="custom-box p-4 text-center w-100">
+            <h4>Top 3 Customers</h4>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Total Rentals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in (List<Prabesh.Dtos.TopCustomerDto>)ViewBag.TopCustomers)
+                    {
+                        <tr>
+                            <td>@c.CustomerName</td>
+                            <td>@c.TotalRentals</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="custom-box p-4 text-center w-100">
+            <h4>Top 3 Movie</h4>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Movie Name</th>
+                        <th>Total Rentals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in (List<Prabesh.Dtos.TopMovie>)ViewBag.TopMovies)
+                    {
+                        <tr>
+                            <td>@c.MovieName</td>
+                            <td>@c.total</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="custom-box p-4 text-center w-100">
+            <h4>Last 2 Rentals</h4>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Date Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in (List<Prabesh.Dtos.TopRentals>)ViewBag.TopRentals)
+                    {
+                        <tr>
+                            <td>@c.CustomerName</td>
+                            <td>@c.DateRented</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
