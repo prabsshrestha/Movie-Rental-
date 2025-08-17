@@ -7,17 +7,20 @@
 }
 
 <div class="jumbotron text-center">
-    <h1 class="display-4">Welcome, @username!</h1>
-    @if (User.IsInRole("CanManageMovies"))
+    <h1 class="display-4">Welcome @username!</h1>
+    @if (User.Identity.IsAuthenticated)
     {
-        <p class="lead">This is your Movie Rental Admin Dashboard.</p>
-
+        if (User.IsInRole("CanManageMovies"))
+        {
+            <p class="lead">This is your Movie Rental Admin Dashboard.</p>
+            <a class="btn btn-primary btn-lg" href="@Url.Action("New", "Rentals")">Add New Rental</a>
+        }
     }
     else
     {
         <p class="lead">Please, login to get access to the application.</p>
+        <a class="btn btn-primary btn-lg" href="@Url.Action("Register", "Account")">Create an account</a>
     }
-    <a class="btn btn-primary btn-lg" href="@Url.Action("New", "Rentals")">Add New Rental</a>
 </div>
 
 @if (User.IsInRole("CanManageMovies"))
