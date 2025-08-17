@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Http.Results;
+using Prabesh.Repository;
 using System.Web.Mvc;
 using Prabesh.Models;
 using Prabesh.Dtos;
+using System.Threading.Tasks;
 
 namespace Prabesh.Controllers
 {
-    [AllowAnonymous] //make home page accessible to anonymous user 
+    [AllowAnonymous] 
     public class HomeController : Controller
     {
 
         private ApplicationDbContext _context;
-
+        private readonly ContactService _contactService;
         public HomeController()
         {
             _context = new ApplicationDbContext();
+            _contactService = new ContactService();
         }
 
         public ActionResult Index()
@@ -91,5 +92,23 @@ namespace Prabesh.Controllers
                 .ToList();
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SendMessage(Contact model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Invalid form submission.";
+                return RedirectToAction("Contact");
+            }
+
+            var result = await _contactService.SendMessageAsync(model);
+
+            if (result.IsSuccess)
+                TempData["success"] = "Your message has been sent successfully.";
+            else
+                TempData["error"] = $"Error sending message: {result.ErrorMessage}";
+
+            return RedirectToAction("Index");
+        }
     }
 }

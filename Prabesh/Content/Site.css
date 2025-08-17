@@ -78,3 +78,9 @@ input.error{
 th{
     text-align:center;
 }
+
+.icon-gap {
+    margin-right: .5rem;
+    position: relative;
+    top: .5px;
+}

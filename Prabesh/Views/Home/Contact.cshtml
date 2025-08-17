@@ -1,16 +1,36 @@
-﻿@{
+﻿@model Prabesh.Models.Contact
+@{
     ViewBag.Title = "Contact";
 }
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
 
-<address>
-    Kathmandu, Nepal<br />
-    <abbr title="Phone">Phone:</abbr>
-    +977425.555.0100
-</address>
+<div class="container mt-4">
+    <h2>Contact</h2>
 
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+    <div class="row">
+        <div class="col-md-6">
+            @using (Html.BeginForm("SendMessage", "Home", FormMethod.Post))
+            {
+                <div style="margin-bottom:15px;">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name", required = "required" })
+                </div>
+                <div style="margin-bottom:15px;">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email", type = "email", required = "required" })
+                </div>
+                <div style="margin-bottom:15px;">
+                    @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", placeholder = "Subject" })
+                </div>
+                <div style="margin-bottom:15px;">
+                    @Html.TextAreaFor(m => m.Message, new { @class = "form-control", rows = "5", placeholder = "Your Message", required = "required" })
+                </div>
+                <button type="submit" class="btn btn-dark">Send Message</button>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h4>Let's Connect</h4>
+            <p><strong>Email:</strong> prabs.shrestha@gmail.com</p>
+            <p><strong>Phone:</strong> +977-9844929153</p>
+            <p><strong>Address:</strong> Kathmandu, Nepal</p>
+        </div>
+    </div>
+</div>
