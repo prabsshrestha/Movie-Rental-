@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
 using Prabesh.Dtos;
 using Prabesh.Models;
 
@@ -41,6 +42,30 @@ namespace Prabesh.Controllers.Api
                     MovieName = c.Movie.Name,
                     DateRented = c.DateRented
                 });
+        }
+
+        [Route("api/totalrentals")]
+        public IEnumerable<RentalDto> GetCustomerRentals()
+        {
+            var userId = User.Identity.GetUserId();
+            var customer = _context.Customers.SingleOrDefault(c => c.UserId == userId);
+
+            var rentalsquery = _context.Rentals
+               .Include(r => r.Customer)
+               .Include(r => r.Movie);
+
+            return rentalsquery
+               .Where(r => r.Customer.Id == customer.Id)
+               .Select(r => new RentalDto
+               {
+                   Id = r.Id,
+                   CustomerId = r.Customer.Id,
+                   CustomerName = r.Customer.Name,
+                   MovieId = r.Movie.Id,
+                   MovieName = r.Movie.Name,
+                   DateRented = r.DateRented
+               })
+               .ToList();
         }
 
         [HttpPost]

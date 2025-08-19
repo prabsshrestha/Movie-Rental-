@@ -1,14 +1,23 @@
 ﻿@model List<Prabesh.Models.Rental>
-
+@{ 
+    bool isAdmin = User.IsInRole("CanManageMovies");
+}
 <h2>Rental List</h2>
 
 <table id="rentals" class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>Customer</th>
+            @if (isAdmin)
+            {
+                <th>Customer</th>
+            }
             <th>Movie</th>
             <th>DateRented</th>
-            <th></th>
+            @if (isAdmin)
+            {
+                <th></th>
+            }
+
         </tr>
     </thead>
     <tbody>
@@ -20,34 +29,30 @@
     <script>
 
         $(document).ready(function () {
+
+            var isAdmin = @Html.Raw(isAdmin.ToString().ToLower());
+            console.log(isAdmin);
+            var columns = [];
+            if (isAdmin) {
+                columns.push({ data: "customerName" });
+            }
+            columns.push({ data: "movieName" });
+            columns.push({ data: "dateRented" });
+            if (isAdmin) {
+                columns.push({
+                    data: "id",
+                    render: function (data) {
+                        return "<button class='btn-link js-delete' data-rental-id=" + data + ">Delete</button>";
+                    }
+                });
+            }
             var table = $("#rentals").DataTable({
-                ajax:
-                {
-                    url: "/api/rentals",
+                ajax: {
+                    url: isAdmin ? "/api/rentals" : "/api/totalrentals",
                     dataSrc: ""
                 },
-                columns:
-                    [
-                        //1st column
-                        {
-                            data: "customerName",
-                        }, 
-                        //2nd column
-                        {
-                            data: "movieName"
-                        },
-                        //3rd column
-                        {
-                            data: "dateRented"
-                        },
-                        {
-                            data: "id",
-                            render: function (data) {
-                                return "<button class='btn-link js-delete' data-rental-id=" + data + ">Delete</button>";
-                            }
-                        }
-                    ],
-                    order: [[2, "desc"]] //sort by 3rd column
+                columns: columns,
+                order: [[isAdmin ? 2 : 1, "desc"]]
             });
 
             $("#rentals").on("click", ".js-delete", function () {

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Prabesh.Models;
 using Prabesh.Dtos;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace Prabesh.Controllers
 {
@@ -23,12 +24,27 @@ namespace Prabesh.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.CustomersCount = _context.Customers.Count();
+            var userId = User.Identity.GetUserId();
             ViewBag.MoviesCount = _context.Movies.Count();
-            ViewBag.RentalsCount = _context.Rentals.Count();
-            ViewBag.TopCustomers = GetTopCustomers();
-            ViewBag.TopMovies = GetTopMovie();
-            ViewBag.TopRentals = GetTopRentals();
+            if (User.Identity.IsAuthenticated) {
+                if (User.IsInRole("CanManageMovies"))
+                {
+                    ViewBag.CustomersCount = _context.Customers.Count();
+                    ViewBag.RentalsCount = _context.Rentals.Count();
+                    ViewBag.TopCustomers = GetTopCustomers();
+                    ViewBag.TopMovies = GetTopMovie();
+                    ViewBag.TopRentals = GetTopRentals();
+                }
+                else
+                {
+                    var customer = _context.Customers.Include("MembershipType").SingleOrDefault(c => c.UserId == userId);
+                    var totatRentals = _context.Rentals.Count(r => r.Customer.Id == customer.Id);
+                    ViewBag.TotalRentalsPerCustomer = totatRentals;
+                    ViewBag.MembershipType = customer.MembershipType?.Name ?? "NA";
+                    ViewBag.LastMovieRent = GetLastRentalsCustomer();
+                    ViewBag.MostMovieRented = MostMoviePerCustomer();
+                }
+            }
             return View();
         }
 
@@ -89,6 +105,51 @@ namespace Prabesh.Controllers
                     DateRented = r.DateRented,
                     CustomerName = r.Customer.Name
                 })
+                .ToList();
+        }
+
+        private List<LastMovieRentPerCustomer> GetLastRentalsCustomer()
+        {
+            var userId = User.Identity.GetUserId();
+            var customer = _context.Customers.SingleOrDefault(c => c.UserId == userId);
+
+            var rentalsquery = _context.Rentals
+               .Include("Customer")
+               .Include("Movie");
+
+            return rentalsquery
+                .Where(r => r.Customer.Id == customer.Id)
+                .OrderByDescending(r => r.DateRented)
+                .ThenByDescending(r => r.Id)   
+                .Take(2)
+                .Select(r => new LastMovieRentPerCustomer
+                {
+                    Movie = r.Movie.Name,
+                    DateRented = r.DateRented
+                })
+                .ToList();
+        }
+
+        private List<CustomerMostMovie> MostMoviePerCustomer()
+        {
+            var userId = User.Identity.GetUserId();
+            var customer = _context.Customers.SingleOrDefault(c => c.UserId == userId);
+
+            var rentalsquery = _context.Rentals
+               .Include("Customer")
+               .Include("Movie")
+               .Where(c => c.CustomerId == customer.Id);
+
+            return rentalsquery
+                .GroupBy(r => new {r.Movie.Id, r.Movie.Name})
+                .Select(g => new CustomerMostMovie
+                {
+                    MovieId = g.Key.Id,   
+                    MovieName = g.Key.Name,
+                    total = g.Count()
+                })
+                .OrderByDescending(x => x.total)
+                .Take(2)
                 .ToList();
         }
 
