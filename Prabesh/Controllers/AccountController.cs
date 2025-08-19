@@ -18,9 +18,11 @@ namespace Prabesh.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext _context;
 
         public AccountController()
         {
+            _context = new ApplicationDbContext();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -162,21 +164,34 @@ namespace Prabesh.Controllers
                     UserName = model.UserName, 
                     Email = model.Email,
                     DrivingLicense = model.DrivingLicense,
-                    Phone = model.Phone
+                    Phone = model.Phone,
+                    Birthdate = model.Birthdate
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                  /*  //temp code 
-                    var rolestore = new RoleStore<IdentityRole>(new ApplicationDbContext());
-                    var roleManager = new RoleManager<IdentityRole>(rolestore);
+                    /*  //temp code 
+                      var rolestore = new RoleStore<IdentityRole>(new ApplicationDbContext());
+                      var roleManager = new RoleManager<IdentityRole>(rolestore);
 
-                    //create a role 
-                    await roleManager.CreateAsync(new IdentityRole("CanManageMovies"));
+                      //create a role 
+                      await roleManager.CreateAsync(new IdentityRole("CanManageMovies"));
 
-                    //assign new user to new role 
-                    await UserManager.AddToRoleAsync(user.Id, "CanManageMovies");
-*/
+                      //assign new user to new role 
+                      await UserManager.AddToRoleAsync(user.Id, "CanManageMovies");
+  */
+
+                    var customer = new Customer
+                    {
+                        Name = user.UserName,
+                        UserId = user.Id,
+                        Birthdate = user.Birthdate,
+                        MembershipTypeId = MembershipType.PayAsYouGo,
+                    };
+
+                    _context.Customers.Add(customer);
+                    _context.SaveChanges();
+
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false); //login automatically after register
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

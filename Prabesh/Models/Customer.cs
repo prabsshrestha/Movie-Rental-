@@ -26,5 +26,9 @@ namespace Prabesh.Models
         [Display(Name = "Date of Birth")]
         [Min18yearsIfAMember]
         public DateTime? Birthdate { get; set; }
+
+        // New: link to AspNetUsers
+        public string UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

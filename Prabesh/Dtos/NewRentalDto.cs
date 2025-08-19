@@ -15,4 +15,17 @@ namespace Prabesh.Dtos
         public string CustomerName { get; set; }
         public DateTime DateRented { get; set; }
     }
+
+    public class LastMovieRentPerCustomer
+    {
+        public string Movie { get; set; }
+        public DateTime DateRented { get; set; }
+    }
+
+    public class CustomerMostMovie
+    {
+        public int MovieId { get; set; }
+        public string MovieName { get; set; }
+        public int total { get; set; }
+    }
 }

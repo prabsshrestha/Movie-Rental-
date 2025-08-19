@@ -4,9 +4,11 @@
     int customersCount = ViewBag.CustomersCount ?? 0;
     int moviesCount = ViewBag.MoviesCount ?? 0;
     int rentalsCount = ViewBag.RentalsCount ?? 0;
+    int totalrentalspercustomer = ViewBag.TotalRentalsPerCustomer ?? 0;
+    var memebershiptype = ViewBag.MembershipType;
 }
 
-<div class="jumbotron text-center">
+<div class="jumbotron text-center" style="padding-top:12px;">
     <h1 class="display-4">Welcome @username!</h1>
     @if (User.Identity.IsAuthenticated)
     {
@@ -23,95 +25,163 @@
     }
 </div>
 
-@if (User.IsInRole("CanManageMovies"))
+@if (User.Identity.IsAuthenticated)
 {
-    <div class="row justify-content-center" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top:-15px;">
-        <div class="custom-box p-4 text-center">
-            <h3>@customersCount</h3>
-            <p>Customers</p>
-            <i class="fas fa-users fa-lg mb-2"></i><br />
-            <a href="@Url.Action("Index", "Customer")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+    if (User.IsInRole("CanManageMovies"))
+    {
+        <div class="row justify-content-center" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top:-15px;">
+            <div class="custom-box p-4 text-center">
+                <h3>@customersCount</h3>
+                <p>Customers</p>
+                <i class="fas fa-users fa-lg mb-2"></i><br />
+                <a href="@Url.Action("Index", "Customer")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+
+            <div class="custom-box p-4 text-center">
+                <h3>@moviesCount</h3>
+                <p>Movies</p>
+                <i class="fas fa-film fa-lg mb-2"></i><br />
+                <a href="@Url.Action("Index", "Movies")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+
+            <div class="custom-box p-4 text-center">
+                <h3>@rentalsCount</h3>
+                <p>New Rentals</p>
+                <i class="fas fa-shopping-cart fa-lg mb-2"></i><br />
+                <a href="@Url.Action("Index", "Rentals")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
         </div>
 
-        <div class="custom-box p-4 text-center">
-            <h3>@moviesCount</h3>
-            <p>Movies</p>
-            <i class="fas fa-film fa-lg mb-2"></i><br />
-            <a href="@Url.Action("Index", "Movies")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-
-        <div class="custom-box p-4 text-center">
-            <h3>@rentalsCount</h3>
-            <p>New Rentals</p>
-            <i class="fas fa-shopping-cart fa-lg mb-2"></i><br />
-            <a href="@Url.Action("Index", "Rentals")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-
-    <div class="row justify-content-center mt-2" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top: 12px;">
-        <div class="custom-box p-4 text-center w-100">
-            <h4>Top 3 Customers</h4>
-            <table class="table table-bordered table-striped mt-3">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Total Rentals</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var c in (List<Prabesh.Dtos.TopCustomerDto>)ViewBag.TopCustomers)
-                    {
+        <div class="row justify-content-center mt-2" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top: 12px;">
+            <div class="custom-box p-4 text-center w-100">
+                <h4>Top 3 Customers</h4>
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="thead-dark">
                         <tr>
-                            <td>@c.CustomerName</td>
-                            <td>@c.TotalRentals</td>
+                            <th>Customer Name</th>
+                            <th>Total Rentals</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in (List<Prabesh.Dtos.TopCustomerDto>)ViewBag.TopCustomers)
+                        {
+                            <tr>
+                                <td>@c.CustomerName</td>
+                                <td>@c.TotalRentals</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="custom-box p-4 text-center w-100">
+                <h4>Top 3 Movie</h4>
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Movie Name</th>
+                            <th>Total Rentals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in (List<Prabesh.Dtos.TopMovie>)ViewBag.TopMovies)
+                        {
+                            <tr>
+                                <td>@c.MovieName</td>
+                                <td>@c.total</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="custom-box p-4 text-center w-100">
+                <h4>Last 2 Rentals</h4>
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Date Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in (List<Prabesh.Dtos.TopRentals>)ViewBag.TopRentals)
+                        {
+                            <tr>
+                                <td>@c.CustomerName</td>
+                                <td>@c.DateRented</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top:-15px;">
+            <div class="custom-box text-center" style="padding-top:5px;">
+                <p>Total Rentals</p>
+                <h3>@totalrentalspercustomer</h3>
+                <a href="@Url.Action("Index", "Rentals")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+
+            <div class="custom-box text-center" style="padding-top:5px;">
+                <p>Total Movies</p>
+                <h3>@moviesCount</h3>
+                <a href="@Url.Action("Index", "Movies")" class="btn btn-link p-0">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+
+            <div class="custom-box text-center" style="padding-top:5px;">
+                <p>Membership Type</p>
+                <h3>@memebershiptype</h3>
+            </div>
         </div>
 
-        <div class="custom-box p-4 text-center w-100">
-            <h4>Top 3 Movie</h4>
-            <table class="table table-bordered table-striped mt-3">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Movie Name</th>
-                        <th>Total Rentals</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var c in (List<Prabesh.Dtos.TopMovie>)ViewBag.TopMovies)
-                    {
+        <div class="row justify-content-center mt-2" style="max-width: 900px; margin: auto; gap: 5px; display: flex; flex-wrap: wrap; margin-top: 12px;">
+            <div class="custom-box p-4 text-center w-100">
+                <h4>Last Rented Movie</h4>
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="thead-dark">
                         <tr>
-                            <td>@c.MovieName</td>
-                            <td>@c.total</td>
+                            <th>Movie Name</th>
+                            <th>DateTime</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="custom-box p-4 text-center w-100">
-            <h4>Last 2 Rentals</h4>
-            <table class="table table-bordered table-striped mt-3">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Date Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var c in (List<Prabesh.Dtos.TopRentals>)ViewBag.TopRentals)
-                    {
+                    </thead>
+                    <tbody>
+                        @foreach (var c in (List<Prabesh.Dtos.LastMovieRentPerCustomer>)ViewBag.LastMovieRent)
+                        {
+                            <tr>
+                                <td>@c.Movie</td>
+                                <td>@c.DateRented</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="custom-box p-4 text-center w-100">
+                <h4>Most Rented Movies</h4>
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="thead-dark">
                         <tr>
-                            <td>@c.CustomerName</td>
-                            <td>@c.DateRented</td>
+                            <th>Movie Name</th>
+                            <th>Total</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in (List<Prabesh.Dtos.CustomerMostMovie>)ViewBag.MostMovieRented)
+                        {
+                            <tr>
+                                <td>@c.MovieName</td>
+                                <td>@c.total</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-}
+    }
+ }
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
