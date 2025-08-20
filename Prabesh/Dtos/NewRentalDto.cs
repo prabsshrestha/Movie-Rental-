@@ -7,8 +7,13 @@ namespace Prabesh.Dtos
 {
     public class NewRentalDto
     {
-            public int CustomerId { get; set; }
-            public List<int> MovieIds { get; set; }
+        public int CustomerId { get; set; }
+        public List<MovieQuantityDto> Movies { get; set; }
+    }
+    public class MovieQuantityDto
+    {
+        public int Id { get; set; }
+        public int Quantity { get; set; }
     }
     public class TopRentals
     {

@@ -74,26 +74,32 @@ namespace Prabesh.Controllers.Api
             var customer = _context.Customers.Single(
                 c => c.Id == newRental.CustomerId);
 
-            var movies = _context.Movies.Where(
-                m => newRental.MovieIds.Contains(m.Id)).ToList();
+            var movieIds = newRental.Movies.Select(m => m.Id).ToList();
 
-            foreach (var movie in movies)
+            var movies = _context.Movies.Where(m =>
+                movieIds.Contains(m.Id)).ToList();
+
+            foreach (var moviedto in newRental.Movies)
             {
-                if (movie.NumberAvailable == 0)
-                    return BadRequest("Movie is not available.");
+                var movie = movies.Single(m => m.Id == moviedto.Id);
 
-                movie.NumberAvailable--;
+                if (movie.NumberAvailable < moviedto.Quantity)
+                    return Content(HttpStatusCode.BadRequest, $"Movie '{movie.Name}' is out of stock.");
 
-                var rental = new Rental
+                movie.NumberAvailable = (byte)(movie.NumberAvailable - moviedto.Quantity);
+
+                for(int i = 0; i < moviedto.Quantity ; i++)
                 {
-                    Customer = customer,
-                    Movie = movie,
-                    DateRented = DateTime.Now
-                };
+                    var rental = new Rental
+                    {
+                        Customer = customer,
+                        Movie = movie,
+                        DateRented = DateTime.Now
+                    };
 
-                _context.Rentals.Add(rental);
+                    _context.Rentals.Add(rental);
+                }
             }
-
             _context.SaveChanges();
 
             return Ok();

@@ -29,6 +29,8 @@ namespace Prabesh.ViewModel
         [Required]
         public byte? NumberInStock { get; set; }
 
+        public byte NumberAvailable { get; set; }
+
         [Display(Name ="Price")]
         [Required]
         public int? Price { get; set; }
@@ -48,6 +50,7 @@ namespace Prabesh.ViewModel
             NumberInStock = movie.NumberInStock;
             GenreId = movie.GenreId;
             Price = (int)movie.Price;
+            NumberAvailable = movie.NumberAvailable;
         }
     }
 }

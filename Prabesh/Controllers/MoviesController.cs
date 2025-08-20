@@ -57,10 +57,10 @@ namespace Prabesh.Controllers
                 Name = movie.Name,
                 ReleaseDate = movie.ReleaseDate,
                 NumberInStock = movie.NumberInStock,
+                NumberAvailable = movie.NumberAvailable,
                 GenreId = movie.GenreId,
                 Genres = _context.Genres.ToList(),
                 Price = (int)movie.Price
-
             };
 
             return View("MovieForm", viewModel);

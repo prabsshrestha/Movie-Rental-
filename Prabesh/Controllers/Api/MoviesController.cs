@@ -30,8 +30,7 @@ namespace Prabesh.Controllers.Api
         public IEnumerable<MovieDto> GetMovies(string query = null)
         {
             var moviesQuery = _context.Movies
-               .Include(m => m.Genre)
-               .Where(m => m.NumberAvailable > 0);
+               .Include(m => m.Genre);
 
             if (!String.IsNullOrWhiteSpace(query))
                 moviesQuery = moviesQuery.Where(m => m.Name.Contains(query));

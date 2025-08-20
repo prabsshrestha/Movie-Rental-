@@ -1,12 +1,16 @@
 ﻿@model List<Prabesh.Models.Movie>
-
 <h2>Movies</h2>
+
+<p>@Html.ActionLink("Add New Movie", "New", "Movies", null, new { @class = "btn btn-primary" })</p>
 
 <table id="movies" class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Movie</th>
             <th>Genre</th>
+            <th>Price</th>
+            <th>Number In Stock</th>
+            <th>Number Available</th>
             <th>Delete</th>
         </tr>
     </thead>
@@ -31,7 +35,7 @@
                         {
                             data: "name",
                             render: function (data, type, movie) {
-                                return "<a href='/movies/edit" + movie.id + "'>" + movie.name + "</a>";
+                                return "<a href='/movies/edit/" + movie.id + "'>" + movie.name + "</a>";
                             }
                         },
                         @*2nd column*@
@@ -40,12 +44,25 @@
                         },
                         @*3rd column*@
                         {
+                            data: "price",
+                            render: function (data) {
+                                return "$ " + data
+                            }
+                        },
+                        {
+                            data: "numberInStock"
+                        },
+                        {
+                            data: "numberAvailable"
+                        },
+                        {
                             data: "id",
                             render: function (data) {
                                 return "<button class='btn-link js-delete' data-movie-id=" + data + ">Delete</button>";
                             }
                         }
-                    ]
+                    ],
+                order: [0, "asc"]
             });
 
             $("#movies").on("click", ".js-delete", function () {
