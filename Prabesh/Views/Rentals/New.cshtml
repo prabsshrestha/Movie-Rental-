@@ -94,7 +94,10 @@
 
     <script>
         $(document).ready(function () {
-
+            toastr.options = {
+                "progressBar": true,
+                "positionClass": "toast-bottom-right",
+            }
             let selectedmovie = [];
 
             //movie dropdown
@@ -113,7 +116,7 @@
 
                 addMovie(id, name, price);
                 $(this).val("");
-                vm.movieIds = selectedmovie.map(m => parseInt(m.id));
+                vm.movies = selectedmovie.map(m => ({id : parseInt(m.id), quantity: m.quantity}));
 
                 updateTotalAmount();
             });
@@ -151,7 +154,7 @@
             }
 
             var vm = {
-                movieIds: [],
+                movies: [],
                 customerId: null,
                 discountPercentage: 0,
                 totalAmount: 0,
@@ -161,7 +164,7 @@
             $("#selectedmovies").off("click", ".remove-movie").on("click", ".remove-movie", function () {
                 const id = String($(this).data("id"));
                 selectedmovie = selectedmovie.filter(m => String(m.id) !== id);
-                vm.movieIds = selectedmovie.map(m => ({ id: m.id, qty: m.quantity }));
+                vm.movies = selectedmovie.map(m => ({ id: parseInt(m.id), quantity: m.quantity }));
 
                 renderMovies();
                 updateTotalAmount();
@@ -217,7 +220,7 @@
 
 
             $.validator.addMethod("AtleastOneMovie", function () {
-                return vm.movieIds.length > 0;
+                return vm.movies.length > 0;
             }, "Please select atleast one movie.");
 
             var validator = $("#newRental").validate({
@@ -226,7 +229,8 @@
                     $.ajax({
                         url: "/api/newRentals",
                         method: "post",
-                        data: vm
+                        data: JSON.stringify(vm),
+                        contentType: "application/json; charset=utf-8"
                     })
                         .done(function () {
                             toastr.success("Rentals successfully recorded.");
@@ -265,8 +269,8 @@
                             validator.resetForm();
 
                         })
-                        .fail(function () {
-                            toastr.fail("Something unexpected happened.");
+                        .fail(function (xhr) {
+                            toastr.error(xhr.responseText); 
                         });
                     return false;
                 }

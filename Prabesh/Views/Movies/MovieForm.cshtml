@@ -40,6 +40,11 @@
         @Html.ValidationMessageFor(m => m.NumberInStock)
     </div>
 
+    <div class="form-group">
+        @Html.LabelFor(m => m.NumberAvailable)
+        @Html.TextBoxFor(m => m.NumberAvailable, new { @class = "form-control" })
+    </div>
+
     @Html.AntiForgeryToken()
 
     <button type="submit" class="btn btn-primary">Save</button>
